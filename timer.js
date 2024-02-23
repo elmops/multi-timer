@@ -21,18 +21,19 @@ document.addEventListener("DOMContentLoaded", () => {
   function addTimer() {
     const defaultTime = defaultTimeInput.value;
     const timerComponent = createTimerComponent(defaultTime);
-    setupTimerControls(timerComponent, defaultTime);
+    setupTimerControls(timerComponent);
   }
 
-  function setupTimerControls(timerComponent, defaultTime) {
+  function setupTimerControls(timerComponent) {
     const startPauseBtn = timerComponent.querySelector(".start-pause-btn");
     const resetBtn = timerComponent.querySelector(".reset-btn");
     const removeBtn = timerComponent.querySelector(".remove-btn");
     const timerValue = timerComponent.querySelector(".timer-value");
     let intervalId = null;
+    let wasRunning = false;
 
-    function toggleTimer() {
-      if (intervalId === null) {
+    function toggleTimer(shouldStart) {
+      if (shouldStart) {
         startTimer();
       } else {
         clearInterval(intervalId);
@@ -49,9 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (totalSeconds <= 0) {
           clearInterval(intervalId);
           intervalId = null;
+          timerComponent.style.backgroundColor = "orange";
+          playSound();
           startPauseBtn.textContent = "Start";
-          timerComponent.style.backgroundColor = "orange"; // Change background color
-          playSound(); // Play sound
           return;
         }
         totalSeconds--;
@@ -68,16 +69,35 @@ document.addEventListener("DOMContentLoaded", () => {
       startPauseBtn.textContent = "Pause";
     }
 
-    function resetTimer() {
+    timerValue.addEventListener("focus", () => {
+      if (intervalId !== null) {
+        wasRunning = true;
+        toggleTimer(false);
+      }
+    });
+
+    timerValue.addEventListener("blur", () => {
+      if (wasRunning) {
+        toggleTimer(true);
+        wasRunning = false; // Reset the flag
+      }
+    });
+
+    startPauseBtn.addEventListener("click", () => {
+      if (intervalId === null) {
+        toggleTimer(true);
+      } else {
+        toggleTimer(false);
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
       clearInterval(intervalId);
       intervalId = null;
-      timerValue.value = defaultTime;
-      timerComponent.style.backgroundColor = ""; // Reset background color
+      timerValue.value = defaultTimeInput.value; // Reset to the current default time
+      timerComponent.style.backgroundColor = ""; // Remove background color
       startPauseBtn.textContent = "Start";
-    }
-
-    startPauseBtn.addEventListener("click", toggleTimer);
-    resetBtn.addEventListener("click", resetTimer);
+    });
 
     removeBtn.addEventListener("click", () => {
       clearInterval(intervalId);
@@ -86,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playSound() {
-    const audio = new Audio("complete.mp3"); // Specify the path to your sound file
+    const audio = new Audio("complete.mp3"); // Update with the path to your sound file
     audio.play();
   }
 });
