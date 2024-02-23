@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function startTimer() {
+      // Clear background color when timer starts
+      timerComponent.style.backgroundColor = ""; // Reset background color to default
+
       let [hours, minutes, seconds] = timerValue.value.split(":").map(num => parseInt(num, 10));
       let totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
