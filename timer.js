@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <input type="text" placeholder="Timer Title" class="timer-title"/>
             <input type="text" value="${defaultTime}" class="timer-value"/>
             <button class="start-pause-btn">Start</button>
-            <button class="reset-btn">🔄</button>
+            <button class="reset-default-btn">Reset to Default</button>
+            <button class="reset-initial-btn">Reset to Initial</button>
             <button class="remove-btn">Remove</button>
         `;
     timerList.appendChild(timerComponent);
@@ -21,12 +22,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function addTimer() {
     const defaultTime = defaultTimeInput.value;
     const timerComponent = createTimerComponent(defaultTime);
-    setupTimerControls(timerComponent);
+    setupTimerControls(timerComponent, defaultTime);
   }
 
-  function setupTimerControls(timerComponent) {
+  function setupTimerControls(timerComponent, initialTime) {
     const startPauseBtn = timerComponent.querySelector(".start-pause-btn");
-    const resetBtn = timerComponent.querySelector(".reset-btn");
+    const resetDefaultBtn = timerComponent.querySelector(".reset-default-btn");
+    const resetInitialBtn = timerComponent.querySelector(".reset-initial-btn");
     const removeBtn = timerComponent.querySelector(".remove-btn");
     const timerValue = timerComponent.querySelector(".timer-value");
     let intervalId = null;
@@ -91,10 +93,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    resetBtn.addEventListener("click", () => {
+    resetDefaultBtn.addEventListener("click", () => {
       clearInterval(intervalId);
       intervalId = null;
       timerValue.value = defaultTimeInput.value; // Reset to the current default time
+      timerComponent.style.backgroundColor = ""; // Remove background color
+      startPauseBtn.textContent = "Start";
+    });
+
+    resetInitialBtn.addEventListener("click", () => {
+      clearInterval(intervalId);
+      intervalId = null;
+      timerValue.value = initialTime; // Reset to the initial time
       timerComponent.style.backgroundColor = ""; // Remove background color
       startPauseBtn.textContent = "Start";
     });
@@ -106,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function playSound() {
-    const audio = new Audio("complete.mp3"); // Update with the path to your sound file
+    const audio = new Audio("complete.mp3"); // Updated with the actual path to the sound file
     audio.play();
   }
 });
